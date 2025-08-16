@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<!-- DOCTYPE declaration tells the browser this is an HTML5 document -->
+<html>
+    <!-- Root element that contains all HTML content -->
+    <head>
+        <!-- Head section contains metadata, links to external resources, and document setup -->
+        <meta charset="UTF-8">
+        <!-- Character encoding declaration - UTF-8 supports international characters -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Viewport meta tag for responsive design - ensures proper scaling on mobile devices -->
+        <title>Sign Up - Travel Itinerary</title>
+        <!-- Page title that appears in browser tab and search results -->
+        
+        <!-- External CSS Libraries -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Bootstrap CSS framework for responsive grid system and pre-built components -->
+        <link rel="stylesheet" href="../css/style.css">
+        <!-- Custom CSS file for project-specific styles -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <!-- Font Awesome for icons (mountain, camera, heart, etc.) -->
+        
+        <style>
+            /* Inline CSS styles specific to this page */
+            
+            /* Main container for authentication pages */
+            .auth-container {
+                min-height: 100vh; /* Full viewport height */
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                /* Gradient background from blue to purple for visual appeal */
+                display: flex; /* Flexbox layout for centering content */
+                align-items: center; /* Vertically center content */
+                justify-content: center; /* Horizontally center content */
+                padding: 2rem 0; /* Top and bottom padding */
+            }
+            
+            /* Card container for the signup form and carousel */
+            .auth-card {
+                background: rgba(255,255,255,0.95); /* Semi-transparent white background */
+                backdrop-filter: blur(10px); /* Blur effect behind the card for modern glass effect */
+                border-radius: 20px; /* Rounded corners */
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1); /* Drop shadow for depth */
+                overflow: hidden; /* Hide content that extends beyond rounded corners */
+                max-width: 1000px; /* Maximum width constraint */
+                width: 100%; /* Full width up to max-width */
+                margin: 0 auto; /* Center the card horizontally */
+            }
+            
+            /* Left side of the card - contains carousel and branding */
+            .auth-left {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                /* Matching gradient background */
+                color: white; /* White text for contrast */
+                padding: 3rem; /* Internal spacing */
+                position: relative; /* For positioning floating icons */
+                overflow: hidden; /* Hide floating icons that go outside bounds */
+            }
+            
+            /* Right side of the card - contains the signup form */
+            .auth-right {
+                padding: 3rem; /* Internal spacing */
+            }
+            
+            /* Bootstrap form input styling customization */
+            .form-control {
+                border-radius: 10px; /* Rounded input corners */
+                border: 2px solid #e9ecef; /* Light gray border */
+                padding: 12px 15px; /* Internal spacing */
+                transition: all 0.3s ease; /* Smooth transition for hover/focus effects */
+            }
+            
+            /* Focus state for form inputs */
+            .form-control:focus {
+                border-color: #667eea; /* Blue border when focused */
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                /* Blue glow effect when focused */
+            }
+            
+            /* Primary button styling */
+            .btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                /* Gradient background matching the theme */
+                border: none; /* Remove default border */
+                border-radius: 10px; /* Rounded corners */
+                padding: 12px 30px; /* Internal spacing */
+                font-weight: 600; /* Semi-bold text */
+                transition: all 0.3s ease; /* Smooth transitions */
+            }
+            
+            /* Hover effect for primary button */
+            .btn-primary:hover {
+                transform: translateY(-2px); /* Move button up slightly on hover */
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+                /* Enhanced shadow on hover */
+            }
+            
+            /* Social login button styling */
+            .social-btn {
+                border: 2px solid #e9ecef; /* Light border */
+                border-radius: 10px; /* Rounded corners */
+                padding: 12px; /* Internal spacing */
+                background: white; /* White background */
+                transition: all 0.3s ease; /* Smooth transitions */
+                text-decoration: none; /* Remove underline from links */
+                color: #333; /* Dark text color */
+                display: flex; /* Flexbox for icon and text alignment */
+                align-items: center; /* Vertically center content */
+                justify-content: center; /* Horizontally center content */
+                gap: 10px; /* Space between icon and text */
+            }
+            
+            /* Hover effect for social buttons */
+            .social-btn:hover {
+                border-color: #667eea; /* Blue border on hover */
+                transform: translateY(-2px); /* Lift effect */
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Shadow on hover */
+                color: #667eea; /* Blue text on hover */
+            }
+            
+            /* Experience Carousel Container */
+            .experience-carousel {
+                position: relative; /* For absolute positioning of slides */
+                height: 350px; /* Fixed height for carousel */
+                overflow: hidden; /* Hide slides outside the container */
+                border-radius: 15px; /* Rounded corners */
+                margin-bottom: 2rem; /* Bottom spacing */
+            }
+            
+            /* Individual carousel slide */
+            .experience-slide {
+                position: absolute; /* Overlay slides on top of each other */
+                top: 0;
+                left: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                opacity: 0; /* Hidden by default */
+                transition: all 0.8s ease-in-out; /* Smooth transition for slide changes */
+                background-size: cover; /* Cover entire slide with background image */
+                background-position: center; /* Center the background image */
+                display: flex; /* Flexbox for content positioning */
+                align-items: flex-end; /* Align content to bottom */
+                color: white; /* White text for contrast */
+                transform: scale(1.1); /* Slightly larger scale for zoom effect */
+            }
+            
+            /* Active slide styling */
+            .experience-slide.active {
+                opacity: 1; /* Visible */
+                transform: scale(1); /* Normal scale */
+            }
+            
+            /* Overlay gradient for better text readability */
+            .experience-slide::before {
+                content: ''; /* Required for pseudo-element */
+                position: absolute; /* Position over the background image */
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(transparent, rgba(0,0,0,0.7));
+                /* Gradient from transparent to dark overlay */
+                z-index: 1; /* Layer above background image */
+            }
+            
+            /* Content container within each slide */
+            .experience-content {
+                position: relative; /* Above the overlay */
+                z-index: 2; /* Higher z-index than overlay */
+                padding: 2rem; /* Internal spacing */
+                width: 100%; /* Full width */
+            }
+            
+            /* Slide title styling */
+            .experience-content h3 {
+                font-size: 1.6rem; /* Large font size */
+                margin-bottom: 0.5rem; /* Bottom spacing */
+                font-weight: bold; /* Bold text */
+            }
+            
+            /* Slide description styling */
+            .experience-content p {
+                font-size: 0.9rem; /* Smaller font size */
+                opacity: 0.9; /* Slightly transparent */
+                margin-bottom: 0.5rem; /* Bottom spacing */
+            }
+            
+            /* Category badges on slides */
+            .experience-badge {
+                display: inline-block; /* Inline block for proper spacing */
+                background: rgba(255,255,255,0.2); /* Semi-transparent white */
+                padding: 4px 12px; /* Internal spacing */
+                border-radius: 20px; /* Pill-shaped badges */
+                font-size: 0.8rem; /* Small font size */
+                margin-right: 8px; /* Right spacing between badges */
+                margin-bottom: 8px; /* Bottom spacing */
+            }
+            
+            /* Floating animation keyframes */
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                /* Start and end position - no movement */
+                50% { transform: translateY(-20px) rotate(5deg); }
+                /* Middle position - move up and rotate slightly */
+            }
+            
+            /* Floating icon styling */
+            .floating-icon {
+                position: absolute; /* Position anywhere in the container */
+                font-size: 2.5rem; /* Large icon size */
+                opacity: 0.1; /* Very transparent */
+                animation: float 8s ease-in-out infinite; /* Continuous floating animation */
+            }
+            
+            /* Position and delay each floating icon differently */
+            .floating-icon:nth-child(1) { top: 5%; left: 5%; animation-delay: 0s; }
+            .floating-icon:nth-child(2) { top: 15%; right: 10%; animation-delay: 2s; }
+            .floating-icon:nth-child(3) { bottom: 25%; left: 15%; animation-delay: 4s; }
+            .floating-icon:nth-child(4) { bottom: 15%; right: 5%; animation-delay: 6s; }
+            
+            /* Form animation keyframes */
+            @keyframes slideInUp {
+                from {
+                    opacity: 0; /* Start invisible */
+                    transform: translateY(30px); /* Start 30px below final position */
+                }
+                to {
+                    opacity: 1; /* End fully visible */
+                    transform: translateY(0); /* End at normal position */
+                }
+            }
+            
+            /* Apply animation to form groups */
+            .form-group {
+                animation: slideInUp 0.6s ease-out; /* Slide up animation */
+            }
+            
+            /* Stagger animation delays for form groups */
+            .form-group:nth-child(1) { animation-delay: 0.1s; }
+            .form-group:nth-child(2) { animation-delay: 0.2s; }
+            .form-group:nth-child(3) { animation-delay: 0.3s; }
+            .form-group:nth-child(4) { animation-delay: 0.4s; }
+            .form-group:nth-child(5) { animation-delay: 0.5s; }
+            
+            /* Pulse animation keyframes for submit button */
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); } /* Normal size */
+                50% { transform: scale(1.05); } /* Slightly larger */
+            }
+            
+            /* Apply pulse animation to primary button */
+            .btn-primary {
+                animation: pulse 2s ease-in-out infinite; /* Continuous pulse */
+            }
+            
+            /* Password strength indicator container */
+            .password-strength {
+                height: 4px; /* Thin bar height */
+                border-radius: 2px; /* Rounded corners */
+                background: #e9ecef; /* Light gray background */
+                margin-top: 8px; /* Top spacing */
+                overflow: hidden; /* Hide strength bar overflow */
+            }
+            
+            /* Password strength bar */
+            .strength-bar {
+                height: 100%; /* Full height of container */
+                width: 0%; /* Start at 0% width */
+                transition: all 0.3s ease; /* Smooth width transitions */
+                border-radius: 2px; /* Rounded corners */
+            }
+            
+            /* Password strength color classes */
+            .strength-weak { background: #dc3545; } /* Red for weak */
+            .strength-medium { background: #ffc107; } /* Yellow for medium */
+            .strength-strong { background: #28a745; } /* Green for strong */
+            
+            /* Responsive design for mobile devices */
+            @media (max-width: 768px) {
+                .auth-left {
+                    display: none; /* Hide carousel on mobile to save space */
+                }
+                .auth-right {
+                    padding: 2rem; /* Reduce padding on mobile */
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Body contains all visible content -->
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+            <!-- Bootstrap navbar with light theme and shadow -->
+            <div class="container-fluid">
+                <!-- Fluid container for full-width layout -->
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <!-- Brand link with flexbox alignment -->
+                    <img src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg" alt="Tripadvisor Logo" height="32" class="me-2">
+                    <!-- Logo image with alt text for accessibility -->
+                </a>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <!-- Collapsible navigation menu aligned to the right -->
+                    <ul class="navbar-nav align-items-center">
+                        <!-- Navigation list with centered alignment -->
+                        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+                        <!-- Navigation item with link -->
+                        <li class="nav-item"><a class="nav-link" href="#">Trips</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Reviews</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Newsletter</a></li>
+                        <li class="nav-item"><a class="nav-link" href="signin.html">Sign in</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Authentication Container -->
+        <div class="auth-container">
+            <!-- Full-height container with gradient background -->
+            <div class="auth-card">
+                <!-- Card container with glass effect -->
+                <div class="row g-0">
+                    <!-- Bootstrap row with no gutters -->
+                    
+                    <!-- Left Side - Experience Carousel -->
+                    <div class="col-lg-6 auth-left">
+                        <!-- Bootstrap column for large screens, left side styling -->
+                        
+                        <!-- Floating decorative icons -->
+                        <div class="floating-icon">
+                            <i class="fas fa-mountain"></i>
+                            <!-- Font Awesome mountain icon -->
+                        </div>
+                        <div class="floating-icon">
+                            <i class="fas fa-umbrella-beach"></i>
+                            <!-- Beach umbrella icon -->
+                        </div>
+                        <div class="floating-icon">
+                            <i class="fas fa-camera"></i>
+                            <!-- Camera icon -->
+                        </div>
+                        <div class="floating-icon">
+                            <i class="fas fa-heart"></i>
+                            <!-- Heart icon -->
+                        </div>
+                        
+                        <!-- Experience Carousel Container -->
+                        <div class="experience-carousel">
+                            <!-- Container for rotating background images -->
+                            
+                            <!-- Slide 1 - Adventure/Nature -->
+                            <div class="experience-slide active" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop')">
+                                <!-- Active slide with mountain background image -->
+                                <div class="experience-content">
+                                    <!-- Content overlay on the background image -->
+                                    <div class="experience-badge">Adventure</div>
+                                    <!-- Category badge -->
+                                    <div class="experience-badge">Nature</div>
+                                    <h3>Start Your Journey</h3>
+                                    <!-- Slide title -->
+                                    <p>Join thousands of travelers discovering amazing destinations</p>
+                                    <!-- Slide description -->
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 2 - Culture/History -->
+                            <div class="experience-slide" style="background-image: url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=600&fit=crop')">
+                                <!-- Hidden slide with cultural background -->
+                                <div class="experience-content">
+                                    <div class="experience-badge">Culture</div>
+                                    <div class="experience-badge">History</div>
+                                    <h3>Explore Cultures</h3>
+                                    <p>Immerse yourself in diverse cultures and traditions</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 3 - Ancient/Mystery -->
+                            <div class="experience-slide" style="background-image: url('https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=800&h=600&fit=crop')">
+                                <!-- Hidden slide with ancient ruins background -->
+                                <div class="experience-content">
+                                    <div class="experience-badge">Ancient</div>
+                                    <div class="experience-badge">Mystery</div>
+                                    <h3>Discover Wonders</h3>
+                                    <p>Visit ancient wonders and modern marvels</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 4 - Luxury/Romance -->
+                            <div class="experience-slide" style="background-image: url('https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=600&fit=crop')">
+                                <!-- Hidden slide with luxury background -->
+                                <div class="experience-content">
+                                    <div class="experience-badge">Luxury</div>
+                                    <div class="experience-badge">Romance</div>
+                                    <h3>Create Memories</h3>
+                                    <p>Build unforgettable memories with loved ones</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 5 - Modern/Urban -->
+                            <div class="experience-slide" style="background-image: url('https://images.unsplash.com/photo-1548013146-72479768bada?w=800&h=600&fit=crop')">
+                                <!-- Hidden slide with city background -->
+                                <div class="experience-content">
+                                    <div class="experience-badge">Modern</div>
+                                    <div class="experience-badge">Urban</div>
+                                    <h3>City Adventures</h3>
+                                    <p>Experience the pulse of vibrant cities</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Call to action text below carousel -->
+                        <div class="text-center mt-4">
+                            <!-- Centered text with top margin -->
+                            <h4 class="mb-3">Join the Adventure!</h4>
+                            <!-- Heading with bottom margin -->
+                            <p class="mb-0">Create your account and start planning your next journey</p>
+                            <!-- Description with no bottom margin -->
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Sign Up Form -->
+                    <div class="col-lg-6 auth-right">
+                        <!-- Bootstrap column for large screens, right side styling -->
+                        
+                        <!-- Form header -->
+                        <div class="text-center mb-4">
+                            <!-- Centered text with bottom margin -->
+                            <h2 class="fw-bold mb-2">Create Account</h2>
+                            <!-- Bold heading with bottom margin -->
+                            <p class="text-muted">Join our community of travelers</p>
+                            <!-- Muted description text -->
+                        </div>
+                        
+                        <!-- Signup form -->
+                        <form id="signupForm">
+                            <!-- Form container with unique ID for JavaScript -->
+                            <div class="row">
+                                <!-- Bootstrap row for form layout -->
+                                <div class="col-md-6">
+                                    <!-- Bootstrap column for medium screens - half width -->
+                                    <div class="form-group mb-3">
+                                        <!-- Form group with bottom margin -->
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <!-- Label associated with input via 'for' attribute -->
+                                        <input type="text" class="form-control" id="firstName" placeholder="Enter first name" required>
+                                        <!-- Text input with Bootstrap styling and required validation -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <!-- Bootstrap column for medium screens - half width -->
+                                    <div class="form-group mb-3">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email input field -->
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <!-- Bootstrap input group for icon + input combination -->
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <!-- Icon prefix using Font Awesome -->
+                                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                                    <!-- Email input with email validation -->
+                                </div>
+                            </div>
+                            
+                            <!-- Password input field with strength indicator -->
+                            <div class="form-group mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <!-- Lock icon prefix -->
+                                    <input type="password" class="form-control" id="password" placeholder="Create a password" required>
+                                    <!-- Password input field -->
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                        <!-- Toggle password visibility button -->
+                                        <i class="fas fa-eye" id="passwordToggle"></i>
+                                        <!-- Eye icon that changes to eye-slash when clicked -->
+                                    </button>
+                                </div>
+                                <!-- Password strength indicator -->
+                                <div class="password-strength">
+                                    <!-- Container for strength bar -->
+                                    <div class="strength-bar" id="strengthBar"></div>
+                                    <!-- Animated strength bar -->
+                                </div>
+                                <small class="text-muted" id="strengthText">Password strength will appear here</small>
+                                <!-- Text description of password strength -->
+                            </div>
+                            
+                            <!-- Confirm password field -->
+                            <div class="form-group mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Terms and conditions checkbox -->
+                            <div class="form-group mb-3">
+                                <div class="form-check">
+                                    <!-- Bootstrap checkbox container -->
+                                    <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                    <!-- Checkbox input with required validation -->
+                                    <label class="form-check-label" for="agreeTerms">
+                                        <!-- Label associated with checkbox -->
+                                        I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                        <!-- Links to legal documents -->
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit button -->
+                            <div class="form-group mb-4">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <!-- Full-width submit button -->
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                    <!-- Icon with right margin and button text -->
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Social login section -->
+                        <div class="text-center mb-4">
+                            <p class="text-muted">Or sign up with</p>
+                            <!-- Divider text -->
+                            <div class="row g-2">
+                                <!-- Bootstrap row with small gap -->
+                                <div class="col-6">
+                                    <!-- Half-width column -->
+                                    <a href="#" class="social-btn">
+                                        <!-- Social login button styled as link -->
+                                        <i class="fab fa-google"></i>
+                                        <!-- Google brand icon -->
+                                        <span>Google</span>
+                                        <!-- Button text -->
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sign in link -->
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? <a href="signin.html" class="text-decoration-none fw-bold">Sign in</a></p>
+                            <!-- Link to sign in page with bold styling -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript Files -->
+        <script src="../js/script.js"></script>
+        <script src="../js/auth.js"></script>
+        <!-- Authentication module for login/signup handling -->
+        <script>
+            // Inline JavaScript for page-specific functionality
+            
+            // Experience carousel functionality
+            let currentExperienceSlide = 0; // Track current slide index
+            const experienceSlides = document.querySelectorAll('.experience-slide');
+            // Get all slide elements
+            const totalExperienceSlides = experienceSlides.length;
+            // Total number of slides
+            
+            // Function to advance to next slide
+            function nextExperienceSlide() {
+                experienceSlides[currentExperienceSlide].classList.remove('active');
+                // Remove active class from current slide
+                currentExperienceSlide = (currentExperienceSlide + 1) % totalExperienceSlides;
+                // Calculate next slide index with wraparound
+                experienceSlides[currentExperienceSlide].classList.add('active');
+                // Add active class to new slide
+            }
+            
+            // Auto-advance experience carousel every 3.5 seconds
+            setInterval(nextExperienceSlide, 3500);
+            
+            // Toggle password visibility function
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                // Get password input element
+                const passwordToggle = document.getElementById('passwordToggle');
+                // Get toggle button icon
+                
+                if (passwordInput.type === 'password') {
+                    // If password is hidden, show it
+                    passwordInput.type = 'text';
+                    passwordToggle.classList.remove('fa-eye');
+                    passwordToggle.classList.add('fa-eye-slash');
+                    // Change icon to eye-slash
+                } else {
+                    // If password is visible, hide it
+                    passwordInput.type = 'password';
+                    passwordToggle.classList.remove('fa-eye-slash');
+                    passwordToggle.classList.add('fa-eye');
+                    // Change icon to eye
+                }
+            }
+        </script>
+    </body>
+</html> 

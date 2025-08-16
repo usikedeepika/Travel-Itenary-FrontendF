@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Travel Itinerary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .payment-method-card {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.1);
+        }
+        
+        .payment-method-card.selected {
+            border-color: #007bff;
+            background-color: #f8f9ff;
+        }
+        
+        .payment-method-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .amount-input {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .processing-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 300px;
+        }
+        
+        .subscription-plan-card {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .subscription-plan-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.1);
+        }
+        
+        .subscription-plan-card.selected {
+            border-color: #007bff;
+            background-color: #f8f9ff;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+        }
+        
+        .plan-header {
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .plan-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .plan-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .plan-price small {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .plan-features {
+            padding: 1rem;
+        }
+        
+        .plan-features li {
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg" alt="Tripadvisor Logo" height="32" class="me-2">
+            </a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="history.html">History</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reviews.html">Reviews</a></li>
+                    <li class="nav-item"><a class="nav-link" href="payments.html">Payments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="newsletter.html">Newsletter</a></li>
+                    
+                    <!-- Membership Badge -->
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            <span class="badge bg-primary" id="membershipBadge" style="display: none;">
+                                <i class="fas fa-crown me-1"></i>
+                                <span id="membershipType">Free</span>
+                            </span>
+                        </span>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span data-user-name>User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" data-logout><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <div class="payment-container">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-6 fw-bold mb-3">
+                    <i class="fas fa-credit-card text-primary me-2"></i>
+                    Secure Payment
+                </h1>
+                <p class="lead text-muted">Complete your payment securely with our trusted payment system</p>
+                
+                <!-- Current Membership Status -->
+                <div id="currentMembership" class="alert alert-info mx-auto" style="max-width: 500px; display: none;">
+                    <i class="fas fa-crown me-2"></i>
+                    <strong>Current Plan:</strong> <span id="currentPlanName">Free</span>
+                    <small class="d-block mt-1">Upgrade or change your subscription plan below</small>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <form id="paymentForm" class="needs-validation" novalidate>
+                <!-- Amount Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Payment Amount</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="amount" class="form-label fw-semibold">Amount (Auto-set by plan)</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control amount-input" id="amount" 
+                                           value="19.99" step="0.01" readonly required>
+                                    <div class="invalid-feedback">
+                                        Please select a subscription plan.
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Amount is automatically set based on your selected plan</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="currency" class="form-label fw-semibold">Currency</label>
+                                <select class="form-select form-select-lg" id="currency" required>
+                                    <option value="usd" selected>USD - US Dollar</option>
+                                    <option value="eur">EUR - Euro</option>
+                                    <option value="gbp">GBP - British Pound</option>
+                                    <option value="cad">CAD - Canadian Dollar</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Method</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="payment-method-card selected" data-method="pm_card_visa">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-cc-visa payment-method-icon text-primary"></i>
+                                <div>
+                                    <h6 class="mb-1">Visa Card</h6>
+                                    <small class="text-muted">•••• •••• •••• 4242</small>
+                                </div>
+                                <div class="ms-auto">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method-card" data-method="pm_card_mastercard">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-cc-mastercard payment-method-icon text-warning"></i>
+                                <div>
+                                    <h6 class="mb-1">Mastercard</h6>
+                                    <small class="text-muted">•••• •••• •••• 5555</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method-card" data-method="pm_card_amex">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-cc-amex payment-method-icon text-info"></i>
+                                <div>
+                                    <h6 class="mb-1">American Express</h6>
+                                    <small class="text-muted">•••• •••• •••• 3782</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" id="paymentMethodId" value="pm_card_visa" required>
+                    </div>
+                </div>
+
+                <!-- Subscription Plans Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-crown me-2"></i>Choose Your Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="subscription-plan-card" data-plan="LITE" data-price="9.99">
+                                    <div class="plan-header text-center p-3">
+                                        <i class="fas fa-paper-plane text-primary mb-2" style="font-size: 2rem;"></i>
+                                        <h6 class="plan-name mb-1">LITE</h6>
+                                        <div class="plan-price">$9.99<small>/month</small></div>
+                                    </div>
+                                    <div class="plan-features">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fas fa-check text-success me-2"></i>Basic trip planning</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>5 AI suggestions/month</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Email support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="subscription-plan-card selected" data-plan="PRO" data-price="19.99">
+                                    <div class="plan-header text-center p-3">
+                                        <i class="fas fa-rocket text-success mb-2" style="font-size: 2rem;"></i>
+                                        <h6 class="plan-name mb-1">PRO</h6>
+                                        <div class="plan-price">$19.99<small>/month</small></div>
+                                        <span class="badge bg-success mt-1">Most Popular</span>
+                                    </div>
+                                    <div class="plan-features">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fas fa-check text-success me-2"></i>Advanced trip planning</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Unlimited AI suggestions</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Priority support</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Travel alerts</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="subscription-plan-card" data-plan="PREMIUM" data-price="29.99">
+                                    <div class="plan-header text-center p-3">
+                                        <i class="fas fa-gem text-warning mb-2" style="font-size: 2rem;"></i>
+                                        <h6 class="plan-name mb-1">PREMIUM</h6>
+                                        <div class="plan-price">$29.99<small>/month</small></div>
+                                    </div>
+                                    <div class="plan-features">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fas fa-check text-success me-2"></i>Premium trip planning</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Unlimited everything</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>24/7 phone support</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Exclusive deals</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Personal travel consultant</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedPlan" value="PRO" required>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Payment Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Amount:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span id="summaryAmount">$0.00</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Currency:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span id="summaryCurrency">USD</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Payment Method:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span id="summaryMethod">Visa Card</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Plan:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span id="summaryPlan">PRO</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Total:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong><span id="summaryTotal">$0.00</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg py-3" id="submitPayment">
+                        <i class="fas fa-lock me-2"></i>
+                        Start Monthly Subscription
+                    </button>
+                </div>
+            </form>
+
+            <!-- Payment Result -->
+            <div id="paymentResult" class="mt-4" style="display: none;"></div>
+        </div>
+    </main>
+
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-card">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5>Processing Payment...</h5>
+            <p class="text-muted mb-0">Please wait while we process your payment securely.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/payments.js"></script>
+    
+    <script>
+        // Update user info in navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            if (!auth.isAuthenticated()) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            
+            // Update user name in navigation
+            const currentUser = auth.getCurrentUser();
+            if (currentUser) {
+                const displayName = currentUser.firstName || currentUser.userName || 'User';
+                document.querySelector('[data-user-name]').textContent = displayName;
+                
+                // Show current membership if user has one
+                if (currentUser.membershipPlan) {
+                    document.getElementById('currentMembership').style.display = 'block';
+                    document.getElementById('currentPlanName').textContent = currentUser.membershipPlan;
+                }
+                
+                // Update membership badge in navigation
+                const membershipBadge = document.getElementById('membershipBadge');
+                const membershipType = document.getElementById('membershipType');
+                if (currentUser.membershipPlan && membershipBadge && membershipType) {
+                    membershipBadge.style.display = 'inline-block';
+                    membershipType.textContent = currentUser.membershipPlan;
+                    
+                    // Change badge color based on plan
+                    membershipBadge.className = 'badge';
+                    if (currentUser.membershipPlan === 'LITE') {
+                        membershipBadge.classList.add('bg-info');
+                    } else if (currentUser.membershipPlan === 'PRO') {
+                        membershipBadge.classList.add('bg-success');
+                    } else if (currentUser.membershipPlan === 'PREMIUM') {
+                        membershipBadge.classList.add('bg-warning');
+                    } else {
+                        membershipBadge.classList.add('bg-primary');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

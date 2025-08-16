@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Itinerary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+      padding: 60px 20px;
+      border-radius: 15px;
+    }
+
+    /* Icon box styling */
+    .icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      transition: background 0.3s ease;
+    }
+    .icon-box i {
+      color: #00796b;
+    }
+    .icon-box:hover {
+      background: #b2dfdb;
+    }
+
+    /* Card hover effect */
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* Button styling */
+    .btn-dark {
+      background: linear-gradient(to right, #00796b, #004d40);
+      border: none;
+    }
+    .btn-dark:hover {
+      background: linear-gradient(to right, #004d40, #00251a);
+    }
+
+    /* Navbar shadow & brand image size */
+    .navbar-brand img {
+      height: 36px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg" alt="Tripadvisor Logo" class="me-2">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center">
+          <!-- Guest Navigation -->
+          <li class="nav-item" data-guest-only><a class="nav-link" href="signup.html">Sign Up</a></li>
+          <li class="nav-item" data-guest-only><a class="nav-link" href="signin.html">Sign In</a></li>
+          <!-- Authenticated Navigation -->
+          <li class="nav-item" data-auth-only style="display:none;"><a class="nav-link" href="home.html">Home</a></li>
+          <li class="nav-item" data-auth-only style="display:none;"><a class="nav-link" href="/history.html">History</a></li>
+          <li class="nav-item" data-auth-only style="display:none;"><a class="nav-link" href="/reviews.html">Reviews</a></li>
+          <li class="nav-item" data-auth-only style="display:none;"><a class="nav-link" href="/payments.html">Payments</a></li>
+          <li class="nav-item" data-auth-only style="display:none;"><a class="nav-link" href="/newsletter.html">Newsletter</a></li>
+          <!-- Membership Badge -->
+          <li class="nav-item" data-auth-only style="display:none;">
+            <span class="nav-link">
+              <span class="badge bg-primary" id="membershipBadge" style="display:none;">
+                <i class="fas fa-crown me-1"></i>
+                <span id="membershipType">Free</span>
+              </span>
+            </span>
+          </li>
+          <!-- User Dropdown -->
+          <li class="nav-item dropdown" data-auth-only style="display:none;">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle me-1"></i>
+              <span data-user-name>User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#" data-logout><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <main class="container text-center mt-5 hero-section">
+    <h1 class="display-5 fw-bold mb-3">Personalize Your Travel Planning with Us</h1>
+    <p class="lead mb-5">Next-generation AI-powered trip planner tailored just for you</p>
+
+    <!-- Features -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-6 col-md-3 mb-4">
+        <div class="icon-box mb-2"><i class="fas fa-magic fa-lg"></i></div>
+        <div class="fw-semibold">Get personalized plans with AI</div>
+      </div>
+      <div class="col-6 col-md-3 mb-4">
+        <div class="icon-box mb-2"><i class="fas fa-heart fa-lg"></i></div>
+        <div class="fw-semibold">Explore plans within budget</div>
+      </div>
+      <div class="col-6 col-md-3 mb-4">
+        <div class="icon-box mb-2"><i class="fas fa-users fa-lg"></i></div>
+        <div class="fw-semibold">Collaborate with friends</div>
+      </div>
+      <div class="col-6 col-md-3 mb-4">
+        <div class="icon-box mb-2"><i class="fas fa-map-marked-alt fa-lg"></i></div>
+        <div class="fw-semibold">Discover favorite locations</div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-5">
+        <div class="card shadow-sm h-100 p-4 border-0 rounded-4">
+          <h2 class="h4 fw-bold mb-2">Plan Your Trip in Minutes with AI</h2>
+          <p>Answer a few quick questions and get AI-powered recommendations based on traveler preferences.</p>
+          <button class="btn btn-dark mb-3 px-4" onclick="redirectToTripPlanner()">Try AI Trip Builder</button>
+          <img src="../static/start_with_ai.png" alt="AI Trip Builder" class="img-fluid rounded-4 border">
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="card shadow-sm h-100 p-4 border-0 rounded-4">
+          <h2 class="h4 fw-bold mb-2">Build Your Own Plan from Scratch</h2>
+          <p>Choose locations based on your budget, days, and group preferences.</p>
+          <button class="btn btn-dark mb-3 px-4" onclick="redirectToTripPlanner()">Start Planning</button>
+          <img src="../static/build_from_scratch.png" alt="Custom Trip Builder" class="img-fluid rounded-4 border">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', updateNavigationBasedOnAuth);
+
+    function updateNavigationBasedOnAuth() {
+      const isLoggedIn = auth.isAuthenticated();
+      const currentUser = auth.getCurrentUser();
+
+      const guestElements = document.querySelectorAll('[data-guest-only]');
+      const authElements = document.querySelectorAll('[data-auth-only]');
+      const userNameElements = document.querySelectorAll('[data-user-name]');
+
+      if (isLoggedIn && currentUser) {
+        guestElements.forEach(el => el.style.display = 'none');
+        authElements.forEach(el => el.style.display = '');
+
+        const displayName = currentUser.firstName || currentUser.userName || 'User';
+        userNameElements.forEach(el => el.textContent = displayName);
+
+        const membershipBadge = document.getElementById('membershipBadge');
+        const membershipType = document.getElementById('membershipType');
+        if (currentUser.membershipPlan) {
+          membershipBadge.style.display = 'inline-block';
+          membershipType.textContent = currentUser.membershipPlan;
+          membershipBadge.className = 'badge';
+          membershipBadge.classList.add(
+            currentUser.membershipPlan === 'LITE' ? 'bg-info' :
+            currentUser.membershipPlan === 'PRO' ? 'bg-success' :
+            currentUser.membershipPlan === 'PREMIUM' ? 'bg-warning' :
+            'bg-primary'
+          );
+        }
+      } else {
+        guestElements.forEach(el => el.style.display = '');
+        authElements.forEach(el => el.style.display = 'none');
+      }
+    }
+
+    function redirectToTripPlanner() {
+      window.location.href = auth.isAuthenticated() ? 'home.html' : 'signup.html';
+    }
+
+    window.addEventListener('storage', e => {
+      if (e.key === 'JWT_TOKEN' || e.key === 'CURRENT_USER') updateNavigationBasedOnAuth();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Plan Your Trip - Travel Itinerary</title>
+        
+        <!-- External CSS Libraries -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        
+        <!-- Inline CSS Styles for Enhanced UI/UX -->
+        <style>
+            /* Search Option Card Hover Effects */
+            .search-option-card {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+            }
+            .search-option-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+            }
+            
+            /* Gradient Backgrounds for Different Search Types */
+            .voice-input {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+            }
+            .manual-input {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+                border: none;
+            }
+            
+            /* Glass Morphism Effect for Search Container */
+            .search-container {
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 2rem;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            }
+            
+            /* Voice Recording Animation */
+            .voice-indicator {
+                animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+            .recording {
+                background: #dc3545 !important;
+                animation: pulse 1s infinite;
+            }
+            
+            /* Hero Section Styling */
+            .hero-section {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 4rem 0;
+                margin-bottom: 3rem;
+            }
+            
+            /* Feature Icon Styling */
+            .feature-icon {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                font-size: 2rem;
+            }
+            
+            /* ===== CAROUSEL STYLES ===== */
+            .carousel-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                position: relative;
+            }
+            
+            .carousel-track {
+                display: flex;
+                transition: transform 0.5s ease-in-out;
+                gap: 20px;
+            }
+            
+            .carousel-slide {
+                min-width: 300px;
+                flex-shrink: 0;
+            }
+            
+            /* Country Card Styling */
+            .country-card {
+                position: relative;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .country-card:hover {
+                transform: translateY(-10px) scale(1.05);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            }
+            
+            .country-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+            
+            .country-card:hover .country-image {
+                transform: scale(1.1);
+            }
+            
+            /* Country Card Overlay Effect */
+            .country-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(transparent, rgba(0,0,0,0.8));
+                color: white;
+                padding: 20px;
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .country-card:hover .country-overlay {
+                transform: translateY(0);
+            }
+            
+            .country-overlay h4 {
+                margin: 0 0 5px 0;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+            
+            .country-overlay p {
+                margin: 0;
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
+            
+            /* Carousel Navigation Controls */
+            .carousel-controls {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
+                display: flex;
+                justify-content: space-between;
+                pointer-events: none;
+                z-index: 10;
+            }
+            
+            .carousel-btn {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(255,255,255,0.9);
+                color: #333;
+                font-size: 1.2rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                pointer-events: auto;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            
+            .carousel-btn:hover {
+                background: white;
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            }
+            
+            /* Carousel Dot Indicators */
+            .carousel-dots {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .carousel-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: rgba(0,0,0,0.3);
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .carousel-dot.active {
+                background: #667eea;
+                transform: scale(1.2);
+            }
+            
+            /* ===== ANIMATION KEYFRAMES ===== */
+            
+            /* Slide In Animation for Carousel */
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            .carousel-slide {
+                animation: slideIn 0.5s ease-out;
+            }
+            
+            /* Floating Animation for Country Cards */
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+            
+            .country-card {
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            /* Staggered Animation Delays for Cards */
+            .country-card:nth-child(2) { animation-delay: 0.5s; }
+            .country-card:nth-child(3) { animation-delay: 1s; }
+            .country-card:nth-child(4) { animation-delay: 1.5s; }
+            .country-card:nth-child(5) { animation-delay: 2s; }
+            .country-card:nth-child(6) { animation-delay: 2.5s; }
+            .country-card:nth-child(7) { animation-delay: 3s; }
+            .country-card:nth-child(8) { animation-delay: 3.5s; }
+            .country-card:nth-child(9) { animation-delay: 4s; }
+            .country-card:nth-child(10) { animation-delay: 4.5s; }
+            
+            /* Fade In Up Animation */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            /* Bounce Animation */
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-10px);
+                }
+                60% {
+                    transform: translateY(-5px);
+                }
+            }
+            
+            /* Shimmer Loading Effect */
+            @keyframes shimmer {
+                0% {
+                    background-position: -200px 0;
+                }
+                100% {
+                    background-position: calc(200px + 100%) 0;
+                }
+            }
+            
+            /* Apply Animations to Page Elements */
+            .hero-section h1 {
+                animation: fadeInUp 1s ease-out;
+            }
+            
+            .hero-section p {
+                animation: fadeInUp 1s ease-out 0.3s both;
+            }
+            
+            .search-container {
+                animation: fadeInUp 1s ease-out 0.6s both;
+            }
+            
+            .search-option-card {
+                animation: fadeInUp 1s ease-out;
+            }
+            
+            .search-option-card:nth-child(1) { animation-delay: 0.2s; }
+            .search-option-card:nth-child(2) { animation-delay: 0.4s; }
+            
+            /* Shimmer Effect for Loading States */
+            .shimmer {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200px 100%;
+                animation: shimmer 2s infinite;
+            }
+            
+            /* Enhanced Hover Effects */
+            .search-option-card:hover .feature-icon {
+                animation: bounce 0.6s ease-in-out;
+            }
+            
+            /* Gentle Pulse Animation for Buttons */
+            @keyframes gentlePulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            
+            .btn:hover {
+                animation: gentlePulse 0.3s ease-in-out;
+            }
+            
+            /* Slide In Animations for Navigation */
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            /* Apply Slide Animations to Navigation Items */
+            .navbar-nav .nav-item:nth-child(odd) {
+                animation: slideInLeft 0.8s ease-out;
+            }
+            
+            .navbar-nav .nav-item:nth-child(even) {
+                animation: slideInRight 0.8s ease-out;
+            }
+            
+            /* Rotate Animation for Icons */
+            @keyframes rotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            
+            .feature-icon:hover {
+                animation: rotate 0.6s ease-in-out;
+            }
+            
+            /* Glow Effect for Active Elements */
+            @keyframes glow {
+                0%, 100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+                50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+            }
+            
+            .carousel-dot.active {
+                animation: glow 2s ease-in-out infinite;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ===== NAVIGATION BAR ===== -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+            <div class="container-fluid">
+                <!-- TripAdvisor Logo -->
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg" alt="Tripadvisor Logo" height="32" class="me-2">
+                </a>
+                
+                <!-- Navigation Menu -->
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-center">
+                        <!-- Guest Navigation (shown when not logged in) -->
+                        <li class="nav-item" data-guest-only><a class="nav-link" href="signup.html">Sign Up</a></li>
+                        <li class="nav-item" data-guest-only><a class="nav-link" href="signin.html">Sign in</a></li>
+                        
+                        <!-- Authenticated Navigation (shown when logged in) -->
+                        <li class="nav-item" data-auth-only style="display: none;"><a class="nav-link active" href="home.html">Home</a></li>
+                        <li class="nav-item" data-auth-only style="display: none;"><a class="nav-link" href="history.html">History</a></li>
+                        <li class="nav-item" data-auth-only style="display: none;"><a class="nav-link" href="reviews.html">Reviews</a></li>
+                        <li class="nav-item" data-auth-only style="display: none;"><a class="nav-link" href="payments.html">Payments</a></li>
+                        <li class="nav-item" data-auth-only style="display: none;"><a class="nav-link" href="newsletter.html">Newsletter</a></li>
+                        
+                        <!-- Membership Badge -->
+                        <li class="nav-item" data-auth-only style="display: none;">
+                            <span class="nav-link">
+                                <span class="badge bg-primary" id="membershipBadge" style="display: none;">
+                                    <i class="fas fa-crown me-1"></i>
+                                    <span id="membershipType">Free</span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <!-- User Info and Logout -->
+                        <li class="nav-item dropdown" data-auth-only style="display: none;">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span data-user-name>User</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" data-logout><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ===== HERO SECTION ===== -->
+        <section class="hero-section">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold mb-3">
+                    <span data-guest-only>Plan Your Perfect Trip</span>
+                    <span data-auth-only style="display: none;">Welcome back, <span data-user-name>User</span>!</span>
+                </h1>
+                <p class="lead mb-4">
+                    <span data-guest-only>Choose your preferred way to search and discover amazing destinations</span>
+                    <span data-auth-only style="display: none;">Ready to explore new destinations? Let's plan your next adventure!</span>
+                </p>
+                
+                <!-- Main Search Container -->
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="search-container">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control form-control-lg" id="mainSearch" placeholder="Where would you like to go?">
+                                <button class="btn btn-dark btn-lg" type="button" onclick="performSearch()">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SEARCH OPTIONS SECTION ===== -->
+        <main class="container mb-5">
+            <h2 class="text-center mb-5 fw-bold">Choose Your Search Method</h2>
+            
+            <div class="row g-4 justify-content-center">
+
+                <!-- ===== VOICE SEARCH OPTION ===== -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card search-option-card shadow-sm h-100 border-0 rounded-4" onclick="activateVoiceSearch()">
+                        <div class="card-body p-4 text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">Voice Search</h3>
+                            <p class="text-muted mb-4">Simply speak your travel desires and let our speech-to-text technology convert your words into the perfect search query.</p>
+                            
+                            <!-- Voice Search Interface (Hidden by default) -->
+                            <div class="voice-search-interface" id="voiceSearchInterface" style="display: none;">
+                                <div class="mb-3">
+                                    <div class="voice-indicator mb-2">
+                                        <i class="fas fa-microphone fa-2x" id="voiceIcon"></i>
+                                    </div>
+                                    <p class="small text-muted" id="voiceStatus">Click to start recording</p>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="voiceResult" rows="2" placeholder="Your voice input will appear here..." readonly></textarea>
+                                </div>
+                                <button class="btn voice-input w-100" onclick="toggleVoiceRecording()" id="voiceBtn">
+                                    <i class="fas fa-microphone"></i> Start Recording
+                                </button>
+                            </div>
+                            
+                            <!-- Voice Search Button (Visible by default) -->
+                            <button class="btn voice-input w-100" id="voiceSearchBtn">
+                                <i class="fas fa-microphone"></i> Start Voice Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MANUAL SEARCH OPTION ===== -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card search-option-card shadow-sm h-100 border-0 rounded-4" onclick="activateManualSearch()">
+                        <div class="card-body p-4 text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-keyboard"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">Manual Search</h3>
+                            <p class="text-muted mb-4">Type your search criteria manually with detailed filters for destination, budget, duration, and preferences.</p>
+                            
+                            <!-- Manual Search Interface (Hidden by default) -->
+                            <div class="manual-search-interface" id="manualSearchInterface" style="display: none;">
+                                <!-- Destination Input -->
+                                <div class="mb-3">
+                                    <label class="form-label">Destination:</label>
+                                    <input type="text" class="form-control" id="destination" placeholder="e.g., Paris, France">
+                                </div>
+                                
+                                <!-- Duration and Budget Inputs -->
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label">Duration (days):</label>
+                                        <input type="number" class="form-control" id="duration" min="1" max="30" value="7">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label">Budget ($):</label>
+                                        <input type="number" class="form-control" id="budget" placeholder="3000">
+                                    </div>
+                                </div>
+                                
+                                <!-- Travel Style Selection -->
+                                <div class="mb-3">
+                                    <label class="form-label">Travel Style:</label>
+                                    <select class="form-select" id="travelStyle">
+                                        <option value="">Select style</option>
+                                        <option value="luxury">Luxury</option>
+                                        <option value="budget">Budget</option>
+                                        <option value="adventure">Adventure</option>
+                                        <option value="relaxation">Relaxation</option>
+                                        <option value="cultural">Cultural</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Travel Companions and Number of People -->
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label">Travel Companions:</label>
+                                        <select class="form-select" id="travelCompanions">
+                                            <option value="">Select option</option>
+                                            <option value="alone">Alone</option>
+                                            <option value="family">With Family</option>
+                                            <option value="friends">With Friends</option>
+                                            <option value="couple">Couple</option>
+                                            <option value="group">Group</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label">Number of People:</label>
+                                        <input type="number" class="form-control" id="numberOfPeople" min="1" max="20" value="1" placeholder="1">
+                                    </div>
+                                </div>
+                                
+                                <!-- Search Button -->
+                                <button class="btn manual-input w-100" onclick="performManualSearch()">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                            
+                            <!-- Manual Search Button (Visible by default) -->
+                            <button class="btn manual-input w-100" id="manualSearchBtn">
+                                <i class="fas fa-keyboard"></i> Start Manual Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FAMOUS COUNTRIES CAROUSEL SECTION ===== -->
+            <section class="py-5 bg-light">
+                <div class="container">
+                    <h2 class="text-center mb-5 fw-bold">Explore Famous Destinations</h2>
+                    
+                    <!-- Carousel Container -->
+                    <div class="carousel-container position-relative overflow-hidden">
+                        <!-- Carousel Track with Country Cards -->
+                        <div class="carousel-track" id="countryCarousel">
+                            <!-- Italy -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400&h=300&fit=crop" alt="Italy" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>Italy</h4>
+                                        <p>Rome, Colosseum</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- USA -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="USA" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>USA</h4>
+                                        <p>New York, Statue of Liberty</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Australia -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=400&h=300&fit=crop" alt="Australia" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>Australia</h4>
+                                        <p>Sydney Opera House</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Brazil -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=300&fit=crop" alt="Brazil" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>Brazil</h4>
+                                        <p>Rio de Janeiro, Christ the Redeemer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Egypt -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1555992336-03a23c7b20ee?w=400&h=300&fit=crop" alt="Egypt" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>Egypt</h4>
+                                        <p>Giza Pyramids</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- India -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&h=300&fit=crop" alt="India" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>India</h4>
+                                        <p>Taj Mahal</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Spain -->
+                            <div class="carousel-slide">
+                                <div class="country-card">
+                                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Spain" class="country-image">
+                                    <div class="country-overlay">
+                                        <h4>Spain</h4>
+                                        <p>Barcelona, Sagrada Familia</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Carousel Navigation Controls -->
+                        <div class="carousel-controls">
+                            <button class="carousel-btn prev-btn" onclick="moveCarousel(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-btn next-btn" onclick="moveCarousel(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Carousel Dot Indicators -->
+                        <div class="carousel-dots" id="carouselDots"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== SEARCH RESULTS SECTION ===== -->
+            <div class="row mt-5" id="searchResults" style="display: none;">
+                <div class="col-12">
+                    <h3 class="mb-4">Search Results</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="resultsContent">
+                                <!-- Search results will be dynamically populated here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="bg-light py-4 mt-5">
+            <div class="container text-center">
+                <p class="mb-0">&copy; 2024 Travel Itinerary. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- ===== JAVASCRIPT FILES ===== -->
+        <!-- Bootstrap JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Authentication Module -->
+        <script src="../js/auth.js"></script>
+        <!-- OpenAI Integration Script -->
+        <script src="../js/openAi.js"></script>
+        <!-- Main Application Script -->
+        <script src="../js/script.js"></script>
+        
+        <!-- Route Protection Script -->
+        <script>
+            // Initialize authentication state when page loads
+            document.addEventListener('DOMContentLoaded', () => {
+                updateNavigationBasedOnAuth();
+            });
+            
+            // Function to update navigation based on authentication status
+            function updateNavigationBasedOnAuth() {
+                const isLoggedIn = auth.isAuthenticated();
+                const currentUser = auth.getCurrentUser();
+                
+                console.log('Auth check - isLoggedIn:', isLoggedIn);
+                console.log('Auth check - currentUser:', currentUser);
+                
+                // Elements to show/hide based on auth state
+                const guestElements = document.querySelectorAll('[data-guest-only]');
+                const authElements = document.querySelectorAll('[data-auth-only]');
+                const userNameElements = document.querySelectorAll('[data-user-name]');
+                
+                console.log('Found guest elements:', guestElements.length);
+                console.log('Found auth elements:', authElements.length);
+                
+                if (isLoggedIn && currentUser) {
+                    // User is logged in - show authenticated nav, hide guest nav
+                    guestElements.forEach(el => el.style.display = 'none');
+                    authElements.forEach(el => el.style.display = '');
+                    
+                    // Update user name in navigation
+                    const displayName = currentUser.firstName || currentUser.userName || 'User';
+                    userNameElements.forEach(el => el.textContent = displayName);
+                    
+                    // Update membership display
+                    const membershipBadge = document.getElementById('membershipBadge');
+                    const membershipType = document.getElementById('membershipType');
+                    if (currentUser.membershipPlan && membershipBadge && membershipType) {
+                        membershipBadge.style.display = 'inline-block';
+                        membershipType.textContent = currentUser.membershipPlan;
+                        
+                        // Change badge color based on plan
+                        membershipBadge.className = 'badge';
+                        if (currentUser.membershipPlan === 'LITE') {
+                            membershipBadge.classList.add('bg-info');
+                        } else if (currentUser.membershipPlan === 'PRO') {
+                            membershipBadge.classList.add('bg-success');
+                        } else if (currentUser.membershipPlan === 'PREMIUM') {
+                            membershipBadge.classList.add('bg-warning');
+                        } else {
+                            membershipBadge.classList.add('bg-primary');
+                        }
+                    } else if (membershipBadge) {
+                        membershipBadge.style.display = 'none';
+                    }
+                    
+                    console.log('User authenticated:', displayName);
+                    console.log('Navigation updated - showing authenticated elements');
+                } else {
+                    // User is not logged in - show guest nav, hide authenticated nav
+                    guestElements.forEach(el => el.style.display = '');
+                    authElements.forEach(el => el.style.display = 'none');
+                    
+                    console.log('User not authenticated');
+                    console.log('Navigation updated - showing guest elements');
+                }
+            }
+            
+            // Listen for authentication changes (useful if auth state changes during session)
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'JWT_TOKEN' || e.key === 'CURRENT_USER') {
+                    updateNavigationBasedOnAuth();
+                }
+            });
+            
+            // Test navigation links
+            document.addEventListener('DOMContentLoaded', () => {
+                // Add click handlers to test navigation
+                const reviewsLink = document.querySelector('a[href="reviews.html"]');
+                if (reviewsLink) {
+                    reviewsLink.addEventListener('click', (e) => {
+                        console.log('Reviews link clicked');
+                        // Check if user is authenticated before allowing navigation
+                        if (!auth.isAuthenticated()) {
+                            e.preventDefault();
+                            alert('Please log in to access the reviews page');
+                            window.location.href = 'signin.html';
+                        }
+                    });
+                }
+            });
+            
+            // Route protection is now handled in auth.js
+        </script>
+    </body>
+</html>

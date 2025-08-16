@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign In - Travel Itinerary</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <style>
+            .auth-container {
+                min-height: 100vh;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem 0;
+            }
+            
+            .auth-card {
+                background: rgba(255,255,255,0.95);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                overflow: hidden;
+                max-width: 1000px;
+                width: 100%;
+                margin: 0 auto;
+            }
+            
+            .auth-left {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 3rem;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .auth-right {
+                padding: 3rem;
+            }
+            
+            .form-control {
+                border-radius: 10px;
+                border: 2px solid #e9ecef;
+                padding: 12px 15px;
+                transition: all 0.3s ease;
+            }
+            
+            .form-control:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+            
+            .btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                border-radius: 10px;
+                padding: 12px 30px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            }
+            
+            .social-btn {
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                padding: 12px;
+                background: white;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                color: #333;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .social-btn:hover {
+                border-color: #667eea;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                color: #667eea;
+            }
+            
+            /* Travel Carousel Styles */
+            .travel-carousel {
+                position: relative;
+                height: 300px;
+                overflow: hidden;
+                border-radius: 15px;
+                margin-bottom: 2rem;
+            }
+            
+            .travel-slide {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                transition: opacity 0.8s ease-in-out;
+                background-size: cover;
+                background-position: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                text-align: center;
+            }
+            
+            .travel-slide.active {
+                opacity: 1;
+            }
+            
+            .travel-slide::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 1;
+            }
+            
+            .travel-content {
+                position: relative;
+                z-index: 2;
+                padding: 2rem;
+            }
+            
+            .travel-content h3 {
+                font-size: 1.8rem;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+            }
+            
+            .travel-content p {
+                font-size: 1rem;
+                opacity: 0.9;
+            }
+            
+            /* Floating elements animation */
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+            }
+            
+            .floating-icon {
+                position: absolute;
+                font-size: 2rem;
+                opacity: 0.1;
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .floating-icon:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+            .floating-icon:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+            .floating-icon:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 2s; }
+            .floating-icon:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 3s; }
+            
+            /* Form animations */
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .form-group {
+                animation: slideInUp 0.6s ease-out;
+            }
+            
+            .form-group:nth-child(1) { animation-delay: 0.1s; }
+            .form-group:nth-child(2) { animation-delay: 0.2s; }
+            .form-group:nth-child(3) { animation-delay: 0.3s; }
+            .form-group:nth-child(4) { animation-delay: 0.4s; }
+            
+            /* Pulse animation for submit button */
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            
+            .btn-primary {
+                animation: pulse 2s ease-in-out infinite;
+            }
+            
+            /* Shimmer effect for loading */
+            @keyframes shimmer {
+                0% { background-position: -200px 0; }
+                100% { background-position: calc(200px + 100%) 0; }
+            }
+            
+            .shimmer {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200px 100%;
+                animation: shimmer 2s infinite;
+            }
+            
+            /* Responsive design */
+            @media (max-width: 768px) {
+                .auth-left {
+                    display: none;
+                }
+                .auth-right {
+                    padding: 2rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="https://static.tacdn.com/img2/brand_refresh/Tripadvisor_lockup_horizontal_secondary_registered.svg" alt="Tripadvisor Logo" height="32" class="me-2">
+                </a>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Trips</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Reviews</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Newsletter</a></li>
+                        <li class="nav-item"><a class="nav-link" href="signin.html">Sign in</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Auth Container -->
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="row g-0">
+                    <!-- Left Side - Travel Carousel -->
+                    <div class="col-lg-6 auth-left">
+                        <div class="floating-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="floating-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="floating-icon">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <div class="floating-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        
+                        <div class="travel-carousel">
+                            <div class="travel-slide active" style="background-image: url('https://images.unsplash.com/photo-1502602898534-47d6b5e0c1b3?w=800&h=600&fit=crop')">
+                                <div class="travel-content">
+                                    <h3>Welcome Back!</h3>
+                                    <p>Continue your journey with personalized travel recommendations</p>
+                                </div>
+                            </div>
+                            <div class="travel-slide" style="background-image: url('https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=800&h=600&fit=crop')">
+                                <div class="travel-content">
+                                    <h3>Explore the World</h3>
+                                    <p>Discover amazing destinations and create unforgettable memories</p>
+                                </div>
+                            </div>
+                            <div class="travel-slide" style="background-image: url('https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&h=600&fit=crop')">
+                                <div class="travel-content">
+                                    <h3>Plan Your Adventure</h3>
+                                    <p>Get AI-powered itineraries tailored to your preferences</p>
+                                </div>
+                            </div>
+                            <div class="travel-slide" style="background-image: url('https://images.unsplash.com/photo-1548013146-72479768bada?w=800&h=600&fit=crop')">
+                                <div class="travel-content">
+                                    <h3>Save Your Trips</h3>
+                                    <p>Keep track of your favorite destinations and travel plans</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <h4 class="mb-3">Ready to explore?</h4>
+                            <p class="mb-0">Sign in to access your personalized travel dashboard</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Sign In Form -->
+                    <div class="col-lg-6 auth-right">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold mb-2">Welcome Back</h2>
+                            <p class="text-muted">Sign in to your account to continue</p>
+                        </div>
+                        
+                        <form id="signinForm">
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email or Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="email" placeholder="Enter your email or username" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                        <i class="fas fa-eye" id="passwordToggle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3 d-flex justify-content-between align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <a href="#" class="text-decoration-none">Forgot password?</a>
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mb-4">
+                            <p class="text-muted">Or continue with</p>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <a href="#" class="social-btn">
+                                        <i class="fab fa-google"></i>
+                                        <span>Google</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="mb-0">Don't have an account? <a href="signup.html" class="text-decoration-none fw-bold">Sign up</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="../js/script.js"></script>
+        <script src="../js/auth.js"></script>
+        <script>
+            // Travel carousel functionality
+            let currentTravelSlide = 0;
+            const travelSlides = document.querySelectorAll('.travel-slide');
+            const totalTravelSlides = travelSlides.length;
+            
+            function nextTravelSlide() {
+                travelSlides[currentTravelSlide].classList.remove('active');
+                currentTravelSlide = (currentTravelSlide + 1) % totalTravelSlides;
+                travelSlides[currentTravelSlide].classList.add('active');
+            }
+            
+            // Auto-advance travel carousel
+            setInterval(nextTravelSlide, 4000);
+            
+            // Toggle password visibility
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                const passwordToggle = document.getElementById('passwordToggle');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordToggle.classList.remove('fa-eye');
+                    passwordToggle.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordToggle.classList.remove('fa-eye-slash');
+                    passwordToggle.classList.add('fa-eye');
+                }
+            }
+        </script>
+    </body>
+</html> 

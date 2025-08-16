@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backend Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Backend Connection Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Basic Backend Connectivity</h3>
+        <button onclick="testBasicConnection()">Test Basic Connection</button>
+        <div id="basicResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Reviews API Test</h3>
+        <button onclick="testReviewsAPI()">Test Reviews API</button>
+        <div id="reviewsResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Authentication API Test</h3>
+        <button onclick="testAuthAPI()">Test Auth API</button>
+        <div id="authResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. CORS Test</h3>
+        <button onclick="testCORS()">Test CORS</button>
+        <div id="corsResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Network Diagnostics</h3>
+        <button onclick="runNetworkDiagnostics()">Run Diagnostics</button>
+        <div id="diagnosticsResult"></div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:8081';
+        
+        async function testBasicConnection() {
+            const resultDiv = document.getElementById('basicResult');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/review`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Backend is accessible!</h4>
+                            <p>Status: ${response.status} ${response.statusText}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="warning">
+                            <h4>⚠️ Backend responded with error</h4>
+                            <p>Status: ${response.status} ${response.statusText}</p>
+                            <pre>${errorText}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Backend connection failed</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Type:</strong> ${error.name}</p>
+                        <p><strong>Possible causes:</strong></p>
+                        <ul>
+                            <li>Backend server is not running on port 8081</li>
+                            <li>Firewall blocking the connection</li>
+                            <li>Wrong port number</li>
+                            <li>Backend crashed or stopped</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        async function testReviewsAPI() {
+            const resultDiv = document.getElementById('reviewsResult');
+            resultDiv.innerHTML = '<p>Testing Reviews API...</p>';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/review`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer test-token'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Reviews API is working!</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="warning">
+                            <h4>⚠️ Reviews API responded with error</h4>
+                            <p>Status: ${response.status}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Reviews API test failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testAuthAPI() {
+            const resultDiv = document.getElementById('authResult');
+            resultDiv.innerHTML = '<p>Testing Auth API...</p>';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'test@test.com',
+                        password: 'test123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.status === 401 || response.status === 400) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Auth API is working!</h4>
+                            <p>Expected authentication error received (status: ${response.status})</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="warning">
+                            <h4>⚠️ Unexpected Auth API response</h4>
+                            <p>Status: ${response.status}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Auth API test failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testCORS() {
+            const resultDiv = document.getElementById('corsResult');
+            resultDiv.innerHTML = '<p>Testing CORS...</p>';
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/review`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': 'http://127.0.0.1:5500',
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type,Authorization'
+                    }
+                });
+                
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+                };
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ CORS Headers Check</h4>
+                        <pre>${JSON.stringify(corsHeaders, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ CORS test failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function runNetworkDiagnostics() {
+            const resultDiv = document.getElementById('diagnosticsResult');
+            resultDiv.innerHTML = '<p>Running diagnostics...</p>';
+            
+            const diagnostics = [];
+            
+            // Test 1: Basic connectivity
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/review`);
+                diagnostics.push(`✅ Basic connectivity: ${response.status}`);
+            } catch (error) {
+                diagnostics.push(`❌ Basic connectivity: ${error.message}`);
+            }
+            
+            // Test 2: Response time
+            const startTime = Date.now();
+            try {
+                await fetch(`${BACKEND_URL}/api/review`);
+                const responseTime = Date.now() - startTime;
+                diagnostics.push(`✅ Response time: ${responseTime}ms`);
+            } catch (error) {
+                diagnostics.push(`❌ Response time: Failed`);
+            }
+            
+            // Test 3: Content-Type
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/review`);
+                const contentType = response.headers.get('Content-Type');
+                diagnostics.push(`✅ Content-Type: ${contentType || 'Not set'}`);
+            } catch (error) {
+                diagnostics.push(`❌ Content-Type: Failed`);
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="test-section">
+                    <h4>🔍 Network Diagnostics Results</h4>
+                    <ul>
+                        ${diagnostics.map(d => `<li>${d}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 

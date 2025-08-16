@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Navigation Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .nav-test { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Navigation Debug Tool</h1>
+    
+    <div class="debug-section">
+        <h3>1. Authentication Status</h3>
+        <button onclick="checkAuthStatus()">Check Auth Status</button>
+        <div id="authStatus"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>2. Navigation Links Test</h3>
+        <div class="nav-test">
+            <a href="home.html" class="btn btn-primary">Home</a>
+            <a href="reviews.html" class="btn btn-primary">Reviews</a>
+            <a href="history.html" class="btn btn-primary">History</a>
+            <a href="payments.html" class="btn btn-primary">Payments</a>
+            <a href="newsletter.html" class="btn btn-primary">Newsletter</a>
+        </div>
+        <div id="navTestResult"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>3. Local Storage Check</h3>
+        <button onclick="checkLocalStorage()">Check Local Storage</button>
+        <div id="localStorageResult"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>4. Manual Navigation Test</h3>
+        <button onclick="testNavigation('home.html')">Test Home</button>
+        <button onclick="testNavigation('reviews.html')">Test Reviews</button>
+        <button onclick="testNavigation('signin.html')">Test Sign In</button>
+        <div id="navigationResult"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>5. Console Logs</h3>
+        <button onclick="clearConsole()">Clear Console</button>
+        <p>Open browser console (F12) to see detailed logs</p>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script>
+        function checkAuthStatus() {
+            const resultDiv = document.getElementById('authStatus');
+            const isLoggedIn = auth.isAuthenticated();
+            const currentUser = auth.getCurrentUser();
+            
+            console.log('Auth check:', { isLoggedIn, currentUser });
+            
+            if (isLoggedIn && currentUser) {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ User is authenticated</h4>
+                        <p><strong>User:</strong> ${currentUser.firstName || currentUser.userName || 'Unknown'}</p>
+                        <p><strong>Email:</strong> ${currentUser.email || 'N/A'}</p>
+                        <p><strong>Token exists:</strong> ${!!auth.getToken()}</p>
+                        <pre>${JSON.stringify(currentUser, null, 2)}</pre>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ User is not authenticated</h4>
+                        <p><strong>Token:</strong> ${auth.getToken() || 'None'}</p>
+                        <p><strong>User data:</strong> ${currentUser || 'None'}</p>
+                        <button onclick="window.location.href='signin.html'">Go to Sign In</button>
+                    </div>
+                `;
+            }
+        }
+
+        function checkLocalStorage() {
+            const resultDiv = document.getElementById('localStorageResult');
+            const jwtToken = localStorage.getItem('JWT_TOKEN');
+            const currentUser = localStorage.getItem('CURRENT_USER');
+            
+            console.log('Local storage check:', { jwtToken, currentUser });
+            
+            resultDiv.innerHTML = `
+                <div class="warning">
+                    <h4>📋 Local Storage Contents</h4>
+                    <p><strong>JWT_TOKEN:</strong> ${jwtToken ? 'Present' : 'Missing'}</p>
+                    <p><strong>CURRENT_USER:</strong> ${currentUser ? 'Present' : 'Missing'}</p>
+                    <pre>JWT_TOKEN: ${jwtToken || 'null'}</pre>
+                    <pre>CURRENT_USER: ${currentUser || 'null'}</pre>
+                </div>
+            `;
+        }
+
+        function testNavigation(page) {
+            const resultDiv = document.getElementById('navigationResult');
+            
+            console.log(`Testing navigation to: ${page}`);
+            
+            // Check if user needs to be authenticated for this page
+            const protectedPages = ['reviews.html', 'history.html', 'payments.html', 'newsletter.html'];
+            const isProtected = protectedPages.includes(page);
+            
+            if (isProtected && !auth.isAuthenticated()) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Navigation blocked</h4>
+                        <p>Page ${page} requires authentication</p>
+                        <p>Redirecting to sign in page...</p>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.location.href = 'signin.html';
+                }, 2000);
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Navigation allowed</h4>
+                        <p>Navigating to ${page}...</p>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.location.href = page;
+                }, 1000);
+            }
+        }
+
+        function clearConsole() {
+            console.clear();
+            console.log('Console cleared');
+        }
+
+        // Auto-run auth check on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Debug page loaded');
+            checkAuthStatus();
+            checkLocalStorage();
+        });
+    </script>
+</body>
+</html> 
