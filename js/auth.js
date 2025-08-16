@@ -10,19 +10,19 @@ const auth = {
                 throw new Error('Google OAuth library not loaded');
             }
 
-            // Check if we're in a development environment
+            // Warn if running locally (domain restrictions apply)
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 console.warn('Running on localhost - Google OAuth might have domain restrictions');
             }
 
-            // Use OAuth2 popup approach for better user experience
+            // Use OAuth2 popup
             const client = google.accounts.oauth2.initTokenClient({
                 client_id: GOOGLE_CLIENT_ID,
                 scope: 'openid email profile',
                 callback: (response) => {
                     if (response.access_token) {
                         console.log(response.access_token);
-                        this.handleGoogleOAuthResponse(response.access_token);
+                        auth.handleGoogleOAuthResponse(response.access_token); // ✅ fixed
                     } else {
                         console.error('No access token received');
                         alert('Google sign-in failed. Please try again.');
@@ -35,22 +35,19 @@ const auth = {
                     }
                 },
                 ux_mode: 'popup',
-                select_account: true // This forces account selection
+                select_account: true
             });
 
-            // Request access token (opens popup)
             client.requestAccessToken();
-
         } catch (error) {
             console.error('Error with Google Sign-In:', error);
-            this.handleGoogleNotAvailable();
+            auth.handleGoogleNotAvailable();
         }
     },
 
     // Handle Google OAuth response with access token
     async handleGoogleOAuthResponse(accessToken) {
         try {
-            // Fetch user info using the access token
             const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
@@ -65,8 +62,7 @@ const auth = {
             console.log('Google user data:', userData);
             
             if (userData && userData.email) {
-                // Pass both user data and the Google access token to backend
-                await this.processGoogleUser(userData, accessToken);
+                await auth.processGoogleUser(userData, accessToken);
             } else {
                 throw new Error('Invalid Google user data received');
             }
@@ -80,8 +76,8 @@ const auth = {
     handleGoogleNotAvailable() {
         console.warn('Google Sign-In not available');
         
-        if (window.location.hostname === 'https://celadon-bubblegum-b40307.netlify.app/') {
-            alert('Google Sign-In is not configured for localhost development.\n\nTo use Google Sign-In:\n1. Add https://celadon-bubblegum-b40307.netlify.app/ and https://celadon-bubblegum-b40307.netlify.app/ to authorized origins in Google Cloud Console\n2. Enable both "Authorized JavaScript origins" and "Authorized redirect URIs"\n3. Or use email/password login for development');
+        if (window.location.hostname === 'celadon-bubblegum-b40307.netlify.app') { // ✅ fixed
+            alert('Google Sign-In is not configured for localhost development.\n\nTo use Google Sign-In:\n1. Add https://celadon-bubblegum-b40307.netlify.app to authorized origins in Google Cloud Console\n2. Enable both "Authorized JavaScript origins" and "Authorized redirect URIs"\n3. Or use email/password login for development');
         } else {
             alert('Google Sign-In is not available. Please use email/password login or try again later.');
         }
@@ -92,7 +88,6 @@ const auth = {
         try {
             console.log('Attempting Google authentication for:', userData.email);
             
-            // Send Google token to backend for validation
             const response = await fetch(`${AUTH_API}/google-auth`, {
                 method: 'POST',
                 headers: { 
@@ -108,7 +103,6 @@ const auth = {
             const data = await response.json();
             
             if (response.ok && data.data) {
-                // Store the JWT token and user data from backend response
                 localStorage.setItem('JWT_TOKEN', data.data.token);
                 localStorage.setItem('CURRENT_USER', JSON.stringify({
                     id: data.data.id,
@@ -147,12 +141,11 @@ const auth = {
         
         const data = await response.json();
         
-        if (response.ok) {
-            // Store in localStorage
+        if (response.ok && data.data) {
             localStorage.setItem('JWT_TOKEN', data.data.token);
             localStorage.setItem('CURRENT_USER', JSON.stringify({
                 id: data.data.id,
-                userName: data.data.userName,
+                userName: data.data.userName,  
                 email: data.data.email,
                 firstName: data.data.firstName,
                 lastName: data.data.lastName,
@@ -168,7 +161,7 @@ const auth = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                userName: userData.email,
+                userName: userData.userName || userData.email,
                 email: userData.email,
                 password: userData.password,
                 firstName: userData.firstName,
@@ -178,16 +171,15 @@ const auth = {
         
         const data = await response.json();
         
-        if (response.ok) {
-            // Store in localStorage
-            localStorage.setItem('JWT_TOKEN', data.token);
+        if (response.ok && data.data) {
+            localStorage.setItem('JWT_TOKEN', data.data.token);
             localStorage.setItem('CURRENT_USER', JSON.stringify({
-                id: data.id,
-                userName: data.userName,
-                email: data.email,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                role: data.role
+                id: data.data.id,
+                userName: data.data.userName,   
+                email: data.data.email,
+                firstName: data.data.firstName,
+                lastName: data.data.lastName,
+                role: data.data.role
             }));
             return data;
         }
@@ -263,7 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     firstName: document.getElementById('firstName').value,
                     lastName: document.getElementById('lastName').value,
                     email: document.getElementById('email').value,
-                    password: document.getElementById('password').value
+                    password: document.getElementById('password').value,
+                    userName: document.getElementById('userName') ? document.getElementById('userName').value : null
                 });
                 
                 alert('Account created successfully!');
@@ -296,4 +289,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Global access
-window.auth = auth; 
+window.auth = auth;
