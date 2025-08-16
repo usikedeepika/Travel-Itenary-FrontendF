@@ -340,7 +340,7 @@
 // Global variables
 let isRecording = false;
 let recognition = null;
-const AUTH_ITINERARY_PATH = 'http://localhost:8081/api/itineraries';
+const AUTH_ITINERARY_PATH = 'https://travel-planner-backend-i299.onrender.com/api/itineraries';
 
 // Carousel functionality
 let currentSlide = 0;

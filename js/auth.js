@@ -80,8 +80,8 @@ const auth = {
     handleGoogleNotAvailable() {
         console.warn('Google Sign-In not available');
         
-        if (window.location.hostname === 'localhost' || window.location.hostname === 'https://travel-planner-backend-i299.onrender.com') {
-            alert('Google Sign-In is not configured for localhost development.\n\nTo use Google Sign-In:\n1. Add http://localhost:5500 and http://127.0.0.1:5500 to authorized origins in Google Cloud Console\n2. Enable both "Authorized JavaScript origins" and "Authorized redirect URIs"\n3. Or use email/password login for development');
+        if (window.location.hostname === 'https://celadon-bubblegum-b40307.netlify.app/') {
+            alert('Google Sign-In is not configured for localhost development.\n\nTo use Google Sign-In:\n1. Add https://celadon-bubblegum-b40307.netlify.app/ and https://celadon-bubblegum-b40307.netlify.app/ to authorized origins in Google Cloud Console\n2. Enable both "Authorized JavaScript origins" and "Authorized redirect URIs"\n3. Or use email/password login for development');
         } else {
             alert('Google Sign-In is not available. Please use email/password login or try again later.');
         }
@@ -121,7 +121,7 @@ const auth = {
                 
                 console.log('Google authentication successful');
                 alert('Google authentication successful!');
-                window.location.href = 'http://127.0.0.1:5500/html/home.html';
+                window.location.href = 'https://celadon-bubblegum-b40307.netlify.app/html/home.html';
                 return;
             } else {
                 throw new Error(data.message || 'Google authentication failed');
@@ -209,7 +209,7 @@ const auth = {
     logout() {
         localStorage.removeItem('JWT_TOKEN');
         localStorage.removeItem('CURRENT_USER');
-        window.location.href = 'http://127.0.0.1:5500/html/signin.html';
+        window.location.href = 'https://celadon-bubblegum-b40307.netlify.app/html/signin.html';
     },
 
     isAuthenticated() {
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 await auth.login(emailOrUsername, password);
                 alert('Login successful!');
-                window.location.href = 'http://127.0.0.1:5500/html/home.html';
+                window.location.href = 'https://celadon-bubblegum-b40307.netlify.app/html/home.html';
             } catch (error) {
                 alert('Login failed: ' + error.message);
             }
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 alert('Account created successfully!');
-                window.location.href = 'http://127.0.0.1:5500/html/home.html';
+                window.location.href = 'https://celadon-bubblegum-b40307.netlify.app/html/home.html';
             } catch (error) {
                 alert('Signup failed: ' + error.message);
             }
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Route protection
     if (window.location.pathname.includes('home.html')) {
         if (!auth.isAuthenticated()) {
-            window.location.href = 'http://127.0.0.1:5500/html/signin.html';
+            window.location.href = 'https://celadon-bubblegum-b40307.netlify.app/html/signin.html';
         }
     }
 });
