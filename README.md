@@ -19,5 +19,8 @@ But it doesn’t stop there — track your search history, and share your travel
 
 🔍 Semantic Search with Apache Lucene – Ensures accurate and relevant results for destinations and activities.
 
+<img width="1920" height="1080" alt="Screenshot (68)" src="https://github.com/user-attachments/assets/d26a1a39-3e7b-453f-8ac4-8b519c7e054d" />
+
+
 .
 
