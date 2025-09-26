@@ -1,7 +1,7 @@
 ## 🌐 Live Project
 Live URL: **[https://celadon-bubblegum-b40307.netlify.app/](https://celadon-bubblegum-b40307.netlify.app/)**
 
-⚙️ **Backend URL:** [Travel-Planner-Backend](https://github.com/usikedeepika/Travel-Planner-backend) 🚀 (Highlighted)
+⚙️ **Backend URL:** [Travel-Planner-Backend](https://github.com/usikedeepika/Travel-Planner-backend)
 
 🌟 About the Project
 
